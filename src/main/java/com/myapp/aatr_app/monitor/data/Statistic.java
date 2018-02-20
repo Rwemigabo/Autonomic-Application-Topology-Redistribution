@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.myapp.aatr_app.monitor;
+package com.myapp.aatr_app.monitor.data;
 import java.sql.Timestamp;
 /**
  *
@@ -41,7 +41,7 @@ public class Statistic {
         return this.network;
     }
 
-    public Timestamp getDate() {
+    public Timestamp getTimestamp() {
         return this.date;
     }
     

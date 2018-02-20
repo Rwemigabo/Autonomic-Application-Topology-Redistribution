@@ -5,10 +5,23 @@
  */
 package com.myapp.aatr_app;
 
+import com.myapp.aatr_app.monitor.Monitor;
+import java.util.ArrayList;
+
 /**
- *Manages all the monitor tasks
+ *Manages all the working monitors
  * @author eric
  */
-public class MonitorManager {
+public class MonitorManager{
+    private Monitor mon;
+    private ArrayList<Monitor> monitors = new ArrayList<Monitor>();
+    public MonitorManager(){
     
+    }
+    
+    public void newMonitor(){
+        int newID = monitors.size()+1;
+        mon = new Monitor(newID); 
+        monitors.add(mon);
+    }
 }

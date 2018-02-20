@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.myapp.aatr_app;
+package com.myapp.aatr_app.kb.persistence;
 
 /**
  * container object
