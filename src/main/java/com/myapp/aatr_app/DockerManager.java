@@ -9,8 +9,8 @@ import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.exceptions.DockerCertificateException;
 import com.spotify.docker.client.exceptions.DockerException;
 import com.spotify.docker.client.messages.Container;
+import com.spotify.docker.client.messages.ContainerStats;
 import com.spotify.docker.client.messages.Image;
-import java.util.ArrayList;
 import java.util.List;
 /**
  * Connects to docker and gathers image info about the topologies(yml files)
@@ -18,10 +18,10 @@ import java.util.List;
  * @author eric
  */
 public class DockerManager {
-    private DockerClient cli;
+    private final DockerClient cli;
     private List<Image> images;
     private List<Container> containers;
-    
+    private final MonitorManager mm = new MonitorManager();
     public DockerManager() throws DockerCertificateException, DockerException, InterruptedException{
     cli = DefaultDockerClient.fromEnv().build();
     images = cli.listImages();
@@ -44,6 +44,12 @@ public class DockerManager {
         }return null;
     }
     
+    public void createMonitors(){
+        for (Container cont : containers) {
+            mm.newMonitor(cont.id());
+        }
+    }
+    
     public Image getImage(String id){
         for (Image img : images) {
             if (img.id().equals(id)){
@@ -52,5 +58,9 @@ public class DockerManager {
         }return null;
     }
     
+    public ContainerStats getContainerStats(String id) throws DockerException, InterruptedException{
+        ContainerStats stats = cli.stats(id);
+        return stats;
+    }
     
 }

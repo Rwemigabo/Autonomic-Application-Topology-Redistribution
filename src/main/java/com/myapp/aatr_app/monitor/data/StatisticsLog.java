@@ -41,7 +41,8 @@ public class StatisticsLog {
         }return s;
     }
     
-    public void newStatistic(Statistic s){
+    public void newStatistic(long mem, long cpu){
+        Statistic s = new Statistic(cpu, mem);
         this.monitorstats.add(s);
     }
     

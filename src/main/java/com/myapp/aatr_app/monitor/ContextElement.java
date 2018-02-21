@@ -5,6 +5,8 @@
  */
 package com.myapp.aatr_app.monitor;
 
+import com.spotify.docker.client.messages.CpuStats;
+
 /**
  *to define the system properties with monitoring interest and assign or 
  * reassign them a threshold. 
@@ -14,18 +16,15 @@ package com.myapp.aatr_app.monitor;
  */
 public class ContextElement {
     private Threshold thresh;
-    private final float value;
     private final String name;
-    public ContextElement(String nm, float val){
+    public ContextElement(String nm){
         this.name = nm;
-        this.value = val;
         
     }
     
-    public ContextElement(float upper, float lower, float val, String nm){
+    public ContextElement(float upper, float lower, String nm){
         this.thresh = new Threshold(upper, lower);
         this.name = nm;
-        this.value = val;
         
     }
     
@@ -41,7 +40,4 @@ public class ContextElement {
         return this.name;
     }
     
-    public float getValue(){
-        return this.value;
-    }
 }

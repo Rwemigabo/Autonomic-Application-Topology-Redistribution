@@ -7,8 +7,9 @@ package com.myapp.aatr_app.monitor;
 
 import com.myapp.aatr_app.Observable;
 import com.myapp.aatr_app.Observer;
-import com.myapp.aatr_app.monitor.data.Statistic;
 import com.myapp.aatr_app.monitor.data.StatisticsLog;
+import com.spotify.docker.client.exceptions.DockerException;
+import java.util.ArrayList;
 
 /**
  *
@@ -16,19 +17,28 @@ import com.myapp.aatr_app.monitor.data.StatisticsLog;
  * Capture and record new statistics to the database every set number of minutes or seconds.
  */
 public class Monitor implements Observer, Observable{
-
-    private Statistic stat;
     private StatisticsLog stats;
-    private int ID;
-    
-    
-    public Monitor(int id){
+    private final int ID;
+    private final String id;
+    private final ArrayList<Sensor> sens;
+    public Monitor(int id, String ID){
+        this.sens = new ArrayList<>();
         this.ID = id;
+        this.id = ID;
+        this.stats = new StatisticsLog();
     }
 
     @Override
-    public void update() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void update(String context, long metric) {
+        long metric2 = 0;
+        for (Sensor sen : sens) {
+            if (!sen.sensorContext().equals(context)){
+                metric2 = sen.getLogValue();
+            }
+        }if(context.equals("CPU")){
+            this.stats.newStatistic(metric, metric2);
+        
+        }else{this.stats.newStatistic(metric2, metric);}
     }
 
     @Override
@@ -42,9 +52,23 @@ public class Monitor implements Observer, Observable{
     }
 
     @Override
-    public void notifyObserver() {
+    public void notifyObservers() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
+    public void startMonitoring() throws DockerException, InterruptedException{
+        for (Sensor sen : sens) {
+            if (sen.sensorContext().equals("CPU")){
+                sen.watchContainer(this.id, 25, 75);
+            }else{sen.watchContainer(this.id, 1000, 3000);}
+        }
+    }
     
+    public void addSensor(Sensor s){
+        this.sens.add(s);
+    }
+    
+    public int getID(){
+    return this.ID;
+    }
 }

@@ -10,37 +10,37 @@ import java.sql.Timestamp;
  * @author eric
  */
 public class Statistic {
-    private final int cpu;
-    private final int memory;
-    private final int BIO;
-    private final int network;
+    private final long cpu;
+    private final long memory;
+    //private final int BIO;
+    //private final int network;
     private final Timestamp date;
     
-    public Statistic(int setcpu, int setmemory, int setBIO, int setnetwork){
+    public Statistic(long setcpu, long setmemory){
         this.cpu = setcpu;
-        this.BIO = setBIO;
+        //this.BIO = setBIO;
         this.memory = setmemory;
-        this.network = setnetwork;
+        //this.network = setnetwork;
         this.date = new Timestamp(System.currentTimeMillis());
 
     }
 
-    public int getCpu(){
+    public long getCpu(){
         return this.cpu;
     }
 
-    public int getMemory(){
+    public long getMemory(){
         return this.memory;
     }
 
-    public int getBIO() {
-        return this.BIO;
-    }
-
-    public int getNetwork() {
-        return this.network;
-    }
-
+//    public int getBIO() {
+//        return this.BIO;
+//    }
+//
+//    public int getNetwork() {
+//        return this.network;
+//    }
+//
     public Timestamp getTimestamp() {
         return this.date;
     }
