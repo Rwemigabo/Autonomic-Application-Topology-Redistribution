@@ -14,9 +14,9 @@ import java.util.ArrayList;
  */
 public class StatisticsLog {
     private ArrayList<Statistic> monitorstats;
-    
-    public StatisticsLog(){
-        
+    private final String container;
+    public StatisticsLog(String contid){
+        this.container = contid;
     }
     
     public ArrayList<Statistic> getSystemStats(){

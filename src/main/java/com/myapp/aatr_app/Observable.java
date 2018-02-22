@@ -5,8 +5,6 @@
  */
 package com.myapp.aatr_app;
 
-import java.util.Observer;
-
 /**
  *
  * @author eric
@@ -18,4 +16,6 @@ public interface Observable {
     public void removeObserver(Observer o);
     
     public void notifyObservers();
+    
+    public void notifyObservers(long metric);
 }

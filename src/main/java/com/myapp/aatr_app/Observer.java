@@ -10,6 +10,6 @@ package com.myapp.aatr_app;
  * @author eric
  */
 public interface Observer {
-    
+    public void update();
     public void update(String context, long metric);
 }

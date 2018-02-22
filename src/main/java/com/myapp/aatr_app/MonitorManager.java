@@ -6,47 +6,58 @@
 package com.myapp.aatr_app;
 
 import com.myapp.aatr_app.monitor.Monitor;
-import com.spotify.docker.client.exceptions.DockerCertificateException;
 import com.spotify.docker.client.exceptions.DockerException;
 import java.util.ArrayList;
 
 /**
- *Manages all the working monitors
+ * Creates new monitors
+ * Manages all the working monitors
+ *
  * @author eric
  */
-public class MonitorManager{
-    
+public class MonitorManager {
+
     private final ArrayList<Monitor> monitors = new ArrayList<>();
     private final SensorManager sm;
-    public MonitorManager() throws DockerCertificateException, DockerException, InterruptedException{
-        this.sm = new SensorManager();
-    
+
+    private static final MonitorManager inst = new MonitorManager();
+
+    private MonitorManager() {
+        sm = SensorManager.getInstance();
     }
-    
+
+    public static MonitorManager getInstance() {
+        return inst;
+    }
+
     /**
-     * 
+     *New Monitor created for a container with
      * @param ID of the container going to be monitored
-     * creates 
      */
-    public void newMonitor(String ID){
-        int newID = monitors.size()+1;
+    public void newMonitor(String ID) throws DockerException, InterruptedException {
+        DockerManager dm = DockerManager.getInstance();
+        int newID = monitors.size() + 1;
         Monitor mon = new Monitor(newID, ID);
-        mon.addSensor(sm.newSensor("CPU"));
-        mon.addSensor(sm.newSensor("Memory"));;
+        mon.addSensor(this.sm.newSensor("CPU"));
+        mon.addSensor(this.sm.newSensor("Memory"));
         monitors.add(mon);
+        if(dm.getContainer(ID).status().equals("running")){
+            startMonitor(newID);
+        }
     }
-    
-    public void startMonitor(int ID) throws DockerException, InterruptedException{
+
+    public void startMonitor(int ID) throws DockerException, InterruptedException {
         for (Monitor monitor : monitors) {
-            if(monitor.getID() == ID){
+            if (monitor.getID() == ID) {
                 monitor.startMonitoring();
             }
         }
     }
-    
-    public void startMonitors() throws DockerException, InterruptedException{
+
+    public void startMonitors() throws DockerException, InterruptedException {
         for (Monitor monitor : monitors) {
             monitor.startMonitoring();
         }
     }
+
 }

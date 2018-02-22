@@ -11,7 +11,9 @@ import com.spotify.docker.client.exceptions.DockerException;
 import com.spotify.docker.client.messages.CpuStats;
 import com.spotify.docker.client.messages.MemoryStats;
 import java.util.ArrayList;
-import java.util.Observer;
+import com.myapp.aatr_app.Observer;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * A sensor observes the context element specified to it and notifies it's subscribers of any changes.
@@ -19,7 +21,7 @@ import java.util.Observer;
  * @author eric
  */
 public class Sensor implements Observable{
-    private final DockerManager dm;
+    
     private final int sensId;
     private final ArrayList<Observer> obs = new ArrayList<>();
     private ContextElement property;
@@ -27,8 +29,7 @@ public class Sensor implements Observable{
     private CpuStats cpu;
     //private BlockIoStats bio;
     private MemoryStats mem;
-    public Sensor(DockerManager dm, int ID, String context){
-        this.dm = dm;
+    public Sensor(int ID, String context){
         this.sensId = ID;
         this.name = context;
         this.property = new ContextElement(context);
@@ -38,25 +39,50 @@ public class Sensor implements Observable{
      * TBD: Split up into different methods each creating new CElement and setting the name of the element
      * 
      * @param id container id
+     * @param min minimum threshold
+     * @param max maximum threshold
      * @throws DockerException
      * @throws InterruptedException 
      */
     public void watchContainer(String id, float min, float max) throws DockerException, InterruptedException{
-//        if (this.property.getName().equals("BlockIO")){
-//            bio = this.dm.getContainerStats(id).blockIoStats();
-//            property.setThreshold(max, min);
-//        } 
+        DockerManager dm = DockerManager.getInstance();
         if(this.property.getName().equals("CPU")){
-            cpu = this.dm.getContainerStats(id).cpuStats();
+            
             property.setThreshold(max, min);
+            while(dm.getContainer(id).status().equals("running")){
+                cpu = dm.getContainerStats(id).cpuStats();
+                monitorThreshold(cpu.systemCpuUsage());
+            }
         }else if(this.property.getName().equals("Memory")){
-            this.dm.getContainerStats(id).memoryStats();
+            
             property.setThreshold(max, min);
+            while(dm.getContainer(id).status().equals("running")){
+                mem = dm.getContainerStats(id).memoryStats();
+                monitorThreshold(mem.usage());
+            }
         }
     }
     
-    public void outsideThreshold(){
-        notifyObservers();
+    /**
+     * Method to monitor the threshold of the given metric
+     * notify the observers if value is over or under threshold
+     * otherwise notify the observers every 30 seconds of the current metric.
+     * @param metric the metric being monitored by the sensor
+     */
+    public void monitorThreshold(final long metric){
+        if(metric >= property.getThreshold().getUpperBound() || metric <= property.getThreshold().getLowerBound()){
+            notifyObservers(metric);
+        }else{
+            Timer timer = new Timer();
+            timer.scheduleAtFixedRate(new TimerTask() {
+
+            @Override
+            public void run() {
+                notifyObservers(metric);
+            }
+            }, 1, 1*30000);
+        }
+        
     }
     
     @Override
@@ -70,9 +96,9 @@ public class Sensor implements Observable{
     }
 
     @Override
-    public void notifyObservers() {
+    public void notifyObservers(long metric) {
         for (Observer ob : obs) {
-            
+            ob.update(this.name, metric);
         }
     }
 
@@ -96,4 +122,10 @@ public class Sensor implements Observable{
         }
         return 0;
     }
+
+    @Override
+    public void notifyObservers() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

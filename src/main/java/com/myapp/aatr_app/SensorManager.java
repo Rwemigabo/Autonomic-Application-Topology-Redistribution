@@ -6,8 +6,6 @@
 package com.myapp.aatr_app;
 
 import com.myapp.aatr_app.monitor.Sensor;
-import com.spotify.docker.client.exceptions.DockerCertificateException;
-import com.spotify.docker.client.exceptions.DockerException;
 import java.util.ArrayList;
 
 /**
@@ -15,23 +13,28 @@ import java.util.ArrayList;
  * @author eric
  */
 public class SensorManager {
-    private ArrayList<Sensor> sensors = new ArrayList<Sensor>();
-    private final DockerManager dm;
+    private final ArrayList<Sensor> sensors = new ArrayList<>();
     
-    public SensorManager() throws DockerCertificateException, DockerException, InterruptedException{
-        dm = new DockerManager();
+    
+    private static final SensorManager instance = new SensorManager();
+    
+    public SensorManager(){
+    }
+    
+    public static SensorManager getInstance(){
+        return instance;
     }
     
     public Sensor newSensor(String context){
         int newID = sensors.size()+1;
-        Sensor sens = new Sensor(dm, newID, context); 
+        Sensor sens = new Sensor(newID, context); 
         sensors.add(sens);
         return sens;
     }
     
     public void newSensor2(String context){
         int newID = sensors.size()+1;
-        Sensor sens = new Sensor(dm, newID, context); 
+        Sensor sens = new Sensor(newID, context); 
         sensors.add(sens);
     }
     
@@ -56,4 +59,5 @@ public class SensorManager {
 //            }
 //        }return s;
 //    }
+
 }

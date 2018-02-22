@@ -12,21 +12,35 @@ import com.spotify.docker.client.exceptions.DockerException;
 import java.util.ArrayList;
 
 /**
- *
+ *TBD monitor/ notify other monitor instances
  * @author eric
  * Capture and record new statistics to the database every set number of minutes or seconds.
  */
 public class Monitor implements Observer, Observable{
-    private StatisticsLog stats;
+    private final StatisticsLog stats;
     private final int ID;
     private final String id;
     private final ArrayList<Sensor> sens;
+    private final ArrayList<Observer> obs;
+    
+    //private Observable obs = null;
+    /**
+     * 
+     * @param id an id  for the new monitor
+     * @param ID the id for the container to be monitored
+     */
     public Monitor(int id, String ID){
         this.sens = new ArrayList<>();
         this.ID = id;
         this.id = ID;
-        this.stats = new StatisticsLog();
+        this.stats = new StatisticsLog(ID);
+        this.obs = new ArrayList<>();
     }
+    
+    @Override
+   public void update() {
+      System.out.println( "whaaatttt" ); 
+   }
 
     @Override
     public void update(String context, long metric) {
@@ -40,20 +54,20 @@ public class Monitor implements Observer, Observable{
         
         }else{this.stats.newStatistic(metric2, metric);}
     }
-
+    
     @Override
-    public void addObserver(java.util.Observer o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void addObserver(Observer o) {
+        obs.add(o);
     }
 
     @Override
-    public void removeObserver(java.util.Observer o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void removeObserver(Observer o) {
+        obs.remove(o);
     }
 
     @Override
-    public void notifyObservers() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void notifyObservers(long metric) {
+       
     }
     
     public void startMonitoring() throws DockerException, InterruptedException{
@@ -71,4 +85,10 @@ public class Monitor implements Observer, Observable{
     public int getID(){
     return this.ID;
     }
+
+    @Override
+    public void notifyObservers() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }
