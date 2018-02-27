@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="war" name="AATR_App:war">
-    <output-path>$PROJECT_DIR$/target</output-path>
-    <root id="archive" name="AATR_App-1.0-SNAPSHOT.war">
-      <element id="artifact" artifact-name="AATR_App:war exploded" />
-    </root>
-  </artifact>
-</component>
