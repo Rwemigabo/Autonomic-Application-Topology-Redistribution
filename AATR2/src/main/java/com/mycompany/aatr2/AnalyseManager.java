@@ -6,7 +6,7 @@
 package com.mycompany.aatr2;
 
 
-import com.mycompany.aatr2.analyse.Analyse;
+import com.mycompany.aatr2.Analyse;
 
 import java.util.ArrayList;
 
